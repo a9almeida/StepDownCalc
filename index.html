@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lottery Stepdown Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="card header">
+      <div>
+        <h1>Lottery Stepdown Calculator</h1>
+        <div class="sub">Generate the stepdown schedule that limits multi-draw wagers before a game change. </div>
+      </div>
+      <!-- <div class="pill tz"><span class="muted">TZ:</span><span id="tz"></span></div>
+      <div class="pill">
+        <label for="themeSelect" class="muted" style="margin-right:6px;">Theme</label>
+        <select id="themeSelect" aria-label="Theme">
+            <option value="auto">Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select> -->
+        </div>
+
+    </header>
+
+    <main class="grid grid-cols-2">
+      <section class="card">
+        <!-- <h2>Inputs</h2>
+        <div class="sub">Enter the last draw under the old rules and the maximum multi-draws allowed.</div> -->
+
+        <label for="game">Game name</label>
+        <input id="game" type="text" placeholder="" value="" />
+
+        <div class="row">
+          <div>
+            <label for="lastDate">Last draw date (old rules)</label>
+            <input id="lastDate" type="date" />
+          </div>
+          <div>
+            <label for="max">Max multi-draw</label>
+            <input id="max" type="number" min="1" step="1" placeholder=""  value=""/>
+          </div>
+        </div>
+
+        <label for="schedule">Schedule</label>
+        <select id="schedule">
+          <option value="daily" selected>Daily</option>
+          <option value="custom">Custom weekdays</option>
+          <option value="mwSat">Mon/Wed/Sat</option>
+          <option value="tuFri">Tue/Fri</option>
+          <option value="twiceDaily">Twice daily</option>
+          
+          <!-- <option value="monitor">Monitor games (by draw number only)</option> -->
+        </select>
+
+        <div id="customWeekdays" class="mt6 hide">
+          <div class="sub mb6">Select draw days</div>
+          <div class="row wrap">
+            <label class="pill"><input type="checkbox" value="0" class="wd"/> Sun</label>
+            <label class="pill"><input type="checkbox" value="1" class="wd"/> Mon</label>
+            <label class="pill"><input type="checkbox" value="2" class="wd"/> Tue</label>
+            <label class="pill"><input type="checkbox" value="3" class="wd"/> Wed</label>
+            <label class="pill"><input type="checkbox" value="4" class="wd"/> Thu</label>
+            <label class="pill"><input type="checkbox" value="5" class="wd"/> Fri</label>
+            <label class="pill"><input type="checkbox" value="6" class="wd"/> Sat</label>
+          </div>
+        </div>
+
+        <!-- Sessions-per-day (optional) -->
+      <div id="customSessionsWrap" class="mt10" >
+        <label class="pill">
+          <input id="enableSessions" type="checkbox" />
+          Enable sessions per day
+        </label>
+
+        <div id="sessionsConfig" class="hide mt8">
+          <label for="sessionMaster">Session list (earliest → latest)</label>
+          <input id="sessionMaster" type="text" value="Midday,Evening" />
+          <div class="sub">Comma-separated. Example: Morning,Afternoon,Evening</div>
+
+          <div class="mt10 sub">Enable sessions per weekday:</div>
+          <div id="weekdaySessionMatrix" class="mt6"></div>
+
+          <div class="mt10">
+            <label for="lastSessionCustom">Last draw session</label>
+            <select id="lastSessionCustom"></select>
+            <div class="sub"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="twiceDailyOpts" class="hide">
+        <div class="row">
+          <div>
+            <label>Last draw session</label>
+            <select id="lastSession">
+              <option value="Evening" selected>Evening</option>
+              <option value="Midday">Midday</option>
+            </select>
+          </div>
+          <div>
+            <label>Session labels</label>
+            <input id="sessionLabels" type="text" value="Midday,Evening" />
+            <div class="sub">Comma-separated; first is earlier session</div>
+          </div>
+        </div>
+      </div>
+
+        <div class="row mt14">
+          <button class="btn primary" id="generate">Generate</button>
+          <button class="btn" id="reset">Reset</button>
+        </div>
+        <div id="error" class="note bad hide mt10"></div>
+      </section>
+
+      <section class="card">
+        <h2>Output</h2>
+        <div id="summary" class="note hide"></div>
+
+        <div class="btnbar">
+          <button class="btn" id="copy">Copy table</button>
+          <button class="btn success" id="csv">Download CSV</button>
+        </div>
+
+        <div class="tablewrap">
+          <table id="table" aria-live="polite">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Draw (session)</th>
+                <th>Multi-draws allowed</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- <div class="footer">
+          Tip: Use <span class="kbd">Tab</span> to move between inputs, then <span class="kbd">Enter</span> to generate. Everything runs locally in your browser.
+        </div> -->
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
