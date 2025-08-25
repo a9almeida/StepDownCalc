@@ -1,41 +1,4 @@
 
-// --- Utilities: date-only math (avoid DST surprises) ---
-// THEME: apply / persist / auto-detect
-// function applyTheme(mode){
-//   const root = document.documentElement;
-//   if(mode === 'auto'){
-//     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-//     root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-//   } else {
-//     root.setAttribute('data-theme', mode);
-//   }
-// }
-
-// function initTheme(){
-//   const select = el('themeSelect');
-//   const saved = localStorage.getItem('themeMode') || 'auto';
-//   select.value = saved;
-
-//   applyTheme(saved);
-
-//   // Update on user change
-//   select.addEventListener('change', ()=>{
-//     const val = select.value;
-//     localStorage.setItem('themeMode', val);
-//     applyTheme(val);
-//   });
-
-//   // If in Auto, follow OS changes live
-//   if(window.matchMedia){
-//     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-//     mq.addEventListener?.('change', ()=>{
-//       const current = localStorage.getItem('themeMode') || 'auto';
-//       if(current === 'auto') applyTheme('auto');
-//     });
-//   }
-// }
-
-
 function toDateOnly(d){ return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); }
 function fromYMD(yyyy_mm_dd){
   const [y,m,d] = yyyy_mm_dd.split('-').map(x=>parseInt(x,10));
@@ -248,6 +211,32 @@ function generateStepdownCustomSessions({ lastDateUTC, max }) {
   })).reverse();
 }
 
+function generateStepdownTwiceDailyByDay({ lastDateUTC, max }) {
+  // We want max+1 rows so the last TWO days are both 1 (…2,1,1)
+  const picksNeeded = max + 1;
+
+  // Build a date list going BACK from the last old draw date
+  const dates = [];
+  let d = new Date(lastDateUTC.getTime());
+  while (dates.length < picksNeeded) {
+    dates.push(new Date(d.getTime()));
+    d = addDays(d, -1);
+  }
+
+  // Reverse to chronological order (earliest → last old draw day)
+  dates.reverse();
+
+  // Allowed sequence should be: max, max-1, …, 2, 1, 1
+  // i = 0 -> max, i = 1 -> max-1, … i = max-1 -> 1, i = max -> 1
+  const rows = dates.map((dateOnly, i) => ({
+    n: i + 1,
+    dateText: fmt(dateOnly),
+    drawText: '-',                // we’re stepping by day; no session shown
+    allowed: Math.max(1, max - i)
+  }));
+
+  return rows;
+}
 
 
 
@@ -676,7 +665,12 @@ function generate(){
 
       rows = generateStepdownCustomSessions({ lastDateUTC: lastUTC, max });
 
-    } else {
+    } else if (mode === 'twiceDaily') {
+      // Step down by calendar DAY, not by session
+      rows = generateStepdownTwiceDailyByDay({
+        lastDateUTC: lastUTC,
+        max
+      });} else {
       const opts = { lastDateUTC: lastUTC, max, mode };
       if (mode === 'custom') opts.weekdays = selectedWeekdaysSet();
       if (mode === 'twiceDaily') {
@@ -770,3 +764,4 @@ document.addEventListener('keydown', (e)=>{
 });
 // Init theme after DOM is ready
 // initTheme();
+
